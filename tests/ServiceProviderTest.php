@@ -11,6 +11,7 @@
 
 namespace BlueBayTravel\Tests\Centurian;
 
+use BlueBayTravel\Centurian\Centurian;
 use GrahamCampbell\TestBenchCore\ServiceProviderTrait;
 
 /**
@@ -21,4 +22,9 @@ use GrahamCampbell\TestBenchCore\ServiceProviderTrait;
 class ServiceProviderTest extends AbstractTestCase
 {
     use ServiceProviderTrait;
+
+    public function testCenturianIsInjectable()
+    {
+        $this->assertIsInjectable(Centurian::class);;
+    }
 }

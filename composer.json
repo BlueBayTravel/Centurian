@@ -12,6 +12,7 @@
     "require": {
         "php": ">=5.5.9",
         "guzzlehttp/guzzle": "^6.1",
+        "illuminate/console": "5.1.*|5.2.*",
         "illuminate/contracts": "5.1.*|5.2.*",
         "illuminate/support": "5.1.*|5.2.*"
     },

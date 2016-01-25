@@ -12,6 +12,7 @@
 namespace BlueBayTravel\Centurian\Console\Commands;
 
 use BlueBayTravel\Centurian\Centurian;
+use Exception;
 use Illuminate\Console\Command;
 
 class CenturianRelease extends Command
@@ -21,7 +22,7 @@ class CenturianRelease extends Command
      *
      * @var string
      */
-    protected $name = 'centurian:release {version}';
+    protected $name = 'centurian:release';
 
     /**
      * The command description.
@@ -29,6 +30,13 @@ class CenturianRelease extends Command
      * @var string
      */
     protected $description = 'Notifies Sentry of a new release';
+
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'centurian:release {version}';
 
     /**
      * The centurian instance.
@@ -58,11 +66,28 @@ class CenturianRelease extends Command
      */
     public function handle()
     {
-        dd($this->argument());
         $version = $this->argument('version');
 
         $this->info('Notifying Sentry of new version: '.$version);
-        $this->centurian->release($version);
-        $this->success('Version '.$version.' has been released.');
+
+        try {
+            $this->centurian->release($version);
+        } catch (Exception $e) {
+            $this->error('There was an error making your release.');
+
+            return;
+        }
+
+        $this->info('Version '.$version.' has been released.');
+    }
+
+    /**
+     * Get the centurian instance.
+     *
+     * @return \BlueBayTravel\Centurian\Centurian
+     */
+    public function getCenturian()
+    {
+        return $this->centurian;
     }
 }

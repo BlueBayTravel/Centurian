@@ -27,9 +27,7 @@ class CenturianReleaseTest extends AbstractTestCase
     {
         $command = $this->getCommand();
 
-        dd($command);
-
-        // $command->getEvents()->shouldReceive('fire')->once()->with('command.publishvendors', $command);
+        $command->getCenturian()->shouldReceive('release')->once()->with('foo', $command);
 
         $this->assertEmpty($command->handle());
     }

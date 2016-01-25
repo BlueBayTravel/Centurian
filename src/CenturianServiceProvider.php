@@ -11,8 +11,10 @@
 
 namespace BlueBayTravel\Centurian;
 
+use BlueBayTravel\Centurian\Console\Commands\CenturianRelease;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 
@@ -25,24 +27,26 @@ class CenturianServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupConfig($this->app);
+        $this->setupConfig();
+
+        $this->commands('command.release');
     }
 
     /**
      * Setup the config.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     *
      * @return void
      */
-    protected function setupConfig(Application $app)
+    protected function setupConfig()
     {
         $source = realpath(__DIR__.'/../config/centurian.php');
-        if ($app instanceof LaravelApplication && $app->runningInConsole()) {
+
+        if ($this->app instanceof Application && $this->app->runningInConsole()) {
             $this->publishes([$source => config_path('centurian.php')]);
-        } elseif ($app instanceof LumenApplication) {
-            $app->configure('centurian');
+        } elseif ($this->app instanceof LumenApplication) {
+            $this->app->configure('centurian');
         }
+
         $this->mergeConfigFrom($source, 'centurian');
     }
 
@@ -53,30 +57,44 @@ class CenturianServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerCenturian($this->app);
+        $this->registerCenturian();
+        $this->registerCenturianReleaseCommand();
     }
 
     /**
      * Registers the weather class.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     *
      * @return void
      */
-    protected function registerCenturian(Application $app)
+    protected function registerCenturian()
     {
-        $app->singleton('centurian', function ($app) {
+        $this->app->singleton('centurian', function (Container $app) {
+            $config = $app['config'];
+
             $client = new Client([
                 'headers' => [
                     'content-type' => 'application/json',
-                    'token'        => $app['config']['centurian']['token'],
                 ],
             ]);
 
-            return new Centurian($client, $app['config']);
+            return new Centurian($client, $config);
         });
 
-        $app->alias('centurian', Centurian::class);
+        $this->app->alias('centurian', Centurian::class);
+    }
+
+    /**
+     * Registers the weather class.
+     *
+     * @return void
+     */
+    protected function registerCenturianReleaseCommand()
+    {
+        $this->app->singleton('command.release', function (Container $app) {
+            $centurian = $app['centurian'];
+
+            return new CenturianRelease($centurian);
+        });
     }
 
     /**
@@ -87,8 +105,7 @@ class CenturianServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'centurian',
-            'centurian.release',
+            'command.release',
         ];
     }
 }
