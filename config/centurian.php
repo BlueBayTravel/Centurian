@@ -51,6 +51,8 @@ return [
     |
     | The token provided to make requests.
     |
+    | You'll need to create a new API key from within your Sentry instance.
+    |
     */
 
     'token' => env('CENTURIAN_TOKEN', null),
