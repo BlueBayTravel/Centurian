@@ -32,6 +32,15 @@ After the service provider has been loaded, publish the config:
 $ php artisan vendor:publish
 ```
 
+## Usage
+
+Once Centurian has been configured, it is simply a matter of running the Artisan command, supplying the version number to release.
+
+
+```bash
+$ php artisan centurian:release 1.0.0
+```
+
 ## License
 
 Blue Bay Travel Centurian is licensed under [The MIT License (MIT)](/LICENSE).
