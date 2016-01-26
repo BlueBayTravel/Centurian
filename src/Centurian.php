@@ -72,7 +72,7 @@ class Centurian
      *
      * @return \Psr7\Request
      */
-    public function releases()
+    public function getReleases()
     {
         $org = $this->config->get('centurian.organization_slug');
         $project = $this->config->get('centurian.project_slug');

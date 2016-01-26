@@ -62,7 +62,7 @@ class CenturianReleaseList extends Command
         $this->info('Fetching versions...');
 
         try {
-            $releases = $this->centurian->get($version);
+            $releases = $this->centurian->getReleases();
         } catch (Exception $e) {
             $this->error('There was an error contacting the API.');
 
