@@ -15,28 +15,21 @@ use BlueBayTravel\Centurian\Centurian;
 use Exception;
 use Illuminate\Console\Command;
 
-class CenturianRelease extends Command
+class CenturianReleaseList extends Command
 {
     /**
      * The command name.
      *
      * @var string
      */
-    protected $name = 'centurian:release';
+    protected $name = 'centurian:list';
 
     /**
      * The command description.
      *
      * @var string
      */
-    protected $description = 'Notifies Sentry of a new release';
-
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'centurian:release {version}';
+    protected $description = 'List all releases for the project';
 
     /**
      * The centurian instance.
@@ -66,19 +59,19 @@ class CenturianRelease extends Command
      */
     public function handle()
     {
-        $version = $this->argument('version');
-
-        $this->info('Notifying Sentry of new version: '.$version);
+        $this->info('Fetching versions...');
 
         try {
-            $this->centurian->createRelease($version);
+            $releases = $this->centurian->get($version);
         } catch (Exception $e) {
-            $this->error('There was an error making your release.');
+            $this->error('There was an error contacting the API.');
 
             return;
         }
 
-        $this->info('Version '.$version.' has been released.');
+        foreach ($releases as $release) {
+            $this->info('Release: '.$release->version);
+        }
     }
 
     /**

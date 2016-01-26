@@ -12,9 +12,10 @@
 namespace BlueBayTravel\Centurian;
 
 use BlueBayTravel\Centurian\Console\Commands\CenturianRelease;
+use BlueBayTravel\Centurian\Console\Commands\CenturianReleaseList;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 
@@ -29,7 +30,7 @@ class CenturianServiceProvider extends ServiceProvider
     {
         $this->setupConfig();
 
-        $this->commands('command.release');
+        $this->commands('command.centurianrelease', 'command.centurianlist');
     }
 
     /**
@@ -41,7 +42,7 @@ class CenturianServiceProvider extends ServiceProvider
     {
         $source = realpath(__DIR__.'/../config/centurian.php');
 
-        if ($this->app instanceof Application && $this->app->runningInConsole()) {
+        if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
             $this->publishes([$source => config_path('centurian.php')]);
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('centurian');
@@ -90,10 +91,24 @@ class CenturianServiceProvider extends ServiceProvider
      */
     protected function registerCenturianReleaseCommand()
     {
-        $this->app->singleton('command.release', function (Container $app) {
+        $this->app->singleton('command.centurianrelease', function (Container $app) {
             $centurian = $app['centurian'];
 
             return new CenturianRelease($centurian);
+        });
+    }
+
+    /**
+     * Registers the weather class.
+     *
+     * @return void
+     */
+    protected function registerCenturianListCommand()
+    {
+        $this->app->singleton('command.centurianlist', function (Container $app) {
+            $centurian = $app['centurian'];
+
+            return new CenturianReleaseList($centurian);
         });
     }
 
@@ -105,7 +120,8 @@ class CenturianServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'command.release',
+            'command.centurianrelease',
+            'command.centurianlist',
         ];
     }
 }

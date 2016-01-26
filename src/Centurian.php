@@ -52,7 +52,7 @@ class Centurian
      *
      * @return \Psr7\Request
      */
-    public function release($version, $ref = null)
+    public function createRelease($version, $ref = null)
     {
         $org = $this->config->get('centurian.organization_slug');
         $project = $this->config->get('centurian.project_slug');
@@ -68,17 +68,35 @@ class Centurian
     }
 
     /**
-     * Makes a request to a URL.
-     *
-     * @param string $request
-     * @param array  $params
+     * Get all releases.
      *
      * @return \Psr7\Request
      */
-    protected function request($request, array $params = [])
+    public function releases()
+    {
+        $org = $this->config->get('centurian.organization_slug');
+        $project = $this->config->get('centurian.project_slug');
+
+        $result = $this->request('api/0/projects/'.$org.'/'.$project.'/releases/', [], 'get');
+
+        $body = (string) $result->getBody();
+
+        return json_decode($body);
+    }
+
+    /**
+     * Makes a request to a URL.
+     *
+     * @param string $uri
+     * @param array  $params
+     * @param string $method
+     *
+     * @return \Psr7\Request
+     */
+    protected function request($uri, array $params = [], $method = 'post')
     {
         $endpoint = $this->config->get('centurian.endpoint');
-        $uri = sprintf('%s/%s', $endpoint, $request);
+        $uri = sprintf('%s/%s', $endpoint, $uri);
 
         $data = [
             'form_params' => $params,
@@ -88,6 +106,6 @@ class Centurian
             ],
         ];
 
-        return $this->client->post($uri, $data);
+        return $this->client->request($method, $uri, $data);
     }
 }
