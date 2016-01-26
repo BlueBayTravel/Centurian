@@ -60,6 +60,7 @@ class CenturianServiceProvider extends ServiceProvider
     {
         $this->registerCenturian();
         $this->registerCenturianReleaseCommand();
+        $this->registerCenturianReleaseListCommand();
     }
 
     /**
@@ -103,7 +104,7 @@ class CenturianServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerCenturianListCommand()
+    protected function registerCenturianReleaseListCommand()
     {
         $this->app->singleton('command.centurianlist', function (Container $app) {
             $centurian = $app['centurian'];
